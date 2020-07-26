@@ -13,8 +13,8 @@ from pathlib import Path, PureWindowsPath
 
 R = '\033[1;31m'  # RED
 G = '\033[0;32m'  # GREEN
-Y = '\033[0;33m' # YELLOW
-M = '\033[0;35m' # MAGENTA
+Y = '\033[0;33m'  # YELLOW
+M = '\033[0;35m'  # MAGENTA
 S = '\033[0m'     # RESET
 
 
@@ -276,12 +276,12 @@ def crawl_unc_helper(client, uncpath, patterns, options):
                                     filename = str(rootpath / filename)
                                     with open(filename, 'w') as fd:
                                         fd.write(data)
-                                    warning('File "%s" was renamed and written to "%s"' % (str(posixpath), filename))
+                                    warning('File %s"%s"%s was renamed and written to %s"%s"%s' % (M, str(posixpath), S, M, filename, S))
                                 else:
                                     raise
                             else:
                                 if dirpath != newdirpath:
-                                    warning('File "%s" was written to "%s"' % (str(posixpath), filename))
+                                    warning('File %s"%s"%s was written to %s"%s"%s' % (M, str(posixpath), S, M, filename, S))
                     else:
                         list_unc_helper(client, record['LinkId'], options, show_parent=False)
 
