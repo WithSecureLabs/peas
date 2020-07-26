@@ -3,21 +3,39 @@ __author__ = 'Adam Rutherford'
 import sys
 import os
 import hashlib
+import errno
+from random import choice
+from string import ascii_uppercase, digits
 from optparse import OptionParser
 
 import peas
+from pathlib import Path, PureWindowsPath
+
+R = '\033[1;31m'  # RED
+G = '\033[0;32m'  # GREEN
+Y = '\033[0;33m' # YELLOW
+M = '\033[0;35m' # MAGENTA
+S = '\033[0m'     # RESET
+
+
+def info(msg):
+    sys.stdout.write('{0}[*] {1}{2}\n'.format(G, msg, S))
+
+
+def warning(msg):
+    sys.stdout.write('{0}[!] {1}{2}\n'.format(Y, msg, S))
 
 
 def error(msg):
-    sys.stderr.write("[-] " + msg + "\n")
+    sys.stderr.write('{0}[-] {1}{2}\n'.format(R, msg, S))
 
 
 def positive(msg):
-    sys.stdout.write("[+] " + msg + "\n")
+    sys.stdout.write('{0}[+] {1}{2}\n'.format(G, msg, S))
 
 
-def negative(msg):
-    sys.stdout.write("[-] " + msg + "\n")
+def split_args(option, opt, value, parser):
+    setattr(parser.values, option.dest, value.split(','))
 
 
 def create_arg_parser():
@@ -60,6 +78,14 @@ def create_arg_parser():
                       help="output formatting and encoding options",
                       metavar="repr,hex,b64,stdout,stderr,file")
 
+    parser.add_option("--pattern", None, type="string", dest="pattern",
+                      action="callback", callback=split_args,
+                      help="filter files by comma-separated patterns (--crawl-unc)")
+
+    parser.add_option("--download", None, dest="download",
+                      action="store_true", default=False,
+                      help="download files at a given UNC path while crawling (--crawl-unc)")
+
     # Functionality:
     parser.add_option("--check", None,
                       action="store_true", dest="check",
@@ -77,6 +103,11 @@ def create_arg_parser():
     parser.add_option("--dl-unc", None,
                       dest="dl_unc",
                       help="download the file at a given UNC path",
+                      metavar="UNC_PATH")
+
+    parser.add_option("--crawl-unc", None,
+                      dest="crawl_unc",
+                      help="recursively list all files at a given UNC path",
                       metavar="UNC_PATH")
 
     return parser
@@ -134,7 +165,7 @@ def check(options):
     if creds_valid:
         positive("Auth success.")
     else:
-        negative("Auth failure.")
+        error("Auth failure.")
 
 
 def extract_emails(options):
@@ -155,27 +186,22 @@ def extract_emails(options):
             output_result(email + '\n', options, default='repr')
 
     if options.output_dir:
-        print("Wrote %d emails to %r" % (len(emails), options.output_dir))
+        info("Wrote %d emails to %r" % (len(emails), options.output_dir))
 
 
-def list_unc(options):
+def list_unc_helper(client, uncpath, options, show_parent=True):
 
-    client = init_authed_client(options, verify=options.verify_ssl)
-    if not client:
-        return
-
-    path = options.list_unc
-    records = client.get_unc_listing(path)
+    records = client.get_unc_listing(uncpath)
 
     output = []
 
-    if not options.quiet:
-        print("Listing: %s\n" % (path,))
+    if not options.quiet and show_parent:
+        info("Listing: %s\n" % (uncpath,))
 
     for record in records:
 
         name = record.get('DisplayName')
-        path = record.get('LinkId')
+        uncpath = record.get('LinkId')
         is_folder = record.get('IsFolder') == '1'
         is_hidden = record.get('IsHidden') == '1'
         size = record.get('ContentLength', '0') + 'B'
@@ -185,9 +211,18 @@ def list_unc(options):
 
         attrs = ('f' if is_folder else '-') + ('h' if is_hidden else '-')
 
-        output.append("%s %-24s %-24s %-24s %-12s %s" % (attrs, created, last_mod, ctype, size, path))
+        output.append("%s %-24s %-24s %-24s %-12s %s" % (attrs, created, last_mod, ctype, size, uncpath))
 
-    output_result('\n'.join(output) + '\n', options, default='stdout')
+    output_result('\n'.join(output), options, default='stdout')
+
+
+def list_unc(options):
+
+    client = init_authed_client(options, verify=options.verify_ssl)
+    if not client:
+        return
+
+    list_unc_helper(client, options.list_unc, options)
 
 
 def dl_unc(options):
@@ -200,9 +235,76 @@ def dl_unc(options):
     data = client.get_unc_file(path)
 
     if not options.quiet:
-        print("Downloading: %s\n" % (path,))
+        info("Downloading: %s\n" % (path,))
 
     output_result(data, options, default='repr')
+
+
+def crawl_unc_helper(client, uncpath, patterns, options):
+
+    records = client.get_unc_listing(uncpath)
+    for record in records:
+        if record['IsFolder'] == '1':
+            if record['LinkId'] == uncpath:
+                continue
+            crawl_unc_helper(client, record['LinkId'], patterns, options)
+        else:
+            for pattern in patterns:
+                if pattern.lower() in record['LinkId'].lower():
+                    if options.download:
+                        try:
+                            data = client.get_unc_file(record['LinkId'])
+                        except TypeError:
+                            pass
+                        else:
+                            winpath = PureWindowsPath(record['LinkId'])
+                            posixpath = Path(winpath.as_posix()) # Windows path to POSIX path
+                            posixpath = Path(*posixpath.parts[1:]) # get rid of leading "/"
+                            dirpath = posixpath.parent
+                            newdirpath = mkdir_p(dirpath)
+                            filename = str(newdirpath / posixpath.name)
+                            try:
+                                with open(filename, 'w') as fd:
+                                    fd.write(data)
+                            # If path name becomes too long when filename is added
+                            except IOError as e:
+                                if e.errno == errno.ENAMETOOLONG:
+                                    rootpath = Path(newdirpath.parts[0])
+                                    extname = posixpath.suffix
+                                    # Generate random name for the file and put it in the root share directory
+                                    filename = ''.join(choice(ascii_uppercase + digits) for _ in range(8)) + extname
+                                    filename = str(rootpath / filename)
+                                    with open(filename, 'w') as fd:
+                                        fd.write(data)
+                                    warning('File "%s" was renamed and written to "%s"' % (str(posixpath), filename))
+                                else:
+                                    raise
+                            else:
+                                if dirpath != newdirpath:
+                                    warning('File "%s" was written to "%s"' % (str(posixpath), filename))
+                    else:
+                        list_unc_helper(client, record['LinkId'], options, show_parent=False)
+
+                    break
+
+
+def crawl_unc(options):
+
+    client = init_authed_client(options, verify=options.verify_ssl)
+    if not client:
+        return
+
+    if options.pattern:
+        patterns = options.pattern
+    else:
+        patterns = ['']
+
+    if options.download:
+        info('Listing and downloading all files: %s\n' % (options.crawl_unc))
+    else:
+        info('Listing all files: %s\n' % (options.crawl_unc))
+
+    crawl_unc_helper(client, options.crawl_unc, patterns, options)
 
 
 def output_result(data, options, default='repr'):
@@ -239,7 +341,7 @@ def output_result(data, options, default='repr'):
             if options.file:
                 open(options.file, 'wb').write(data)
                 if not options.quiet:
-                    print("Wrote %d bytes to %r." % (len(data), options.file))
+                    info("Wrote %d bytes to %r." % (len(data), options.file))
             else:
                 error("No filename specified.")
             encoding_used = True
@@ -259,6 +361,23 @@ def process_options(options):
             pass
 
     return options
+
+
+def mkdir_p(dirpath):
+
+    try:
+        dirname = str(dirpath)
+        os.makedirs(dirname)
+    except OSError as e:
+        if e.errno == errno.EEXIST and os.path.isdir(dirname):
+            pass
+        # If directory path name already too long
+        elif e.errno == errno.ENAMETOOLONG:
+            dirpath = Path(dirpath.parts[0])
+        else:
+            raise
+
+    return dirpath
 
 
 def main():
@@ -291,6 +410,9 @@ def main():
         ran = True
     if options.dl_unc:
         dl_unc(options)
+        ran = True
+    if options.crawl_unc:
+        crawl_unc(options)
         ran = True
     if not ran:
         check_server(options)

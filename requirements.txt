@@ -1,0 +1,6 @@
+requests
+twisted
+pyOpenSSL
+lxml
+service_identity
+pathlib
