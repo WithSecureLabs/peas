@@ -222,14 +222,16 @@ class wbxml_parser(object):
 
     def encode_string(self, string):
         string = str(string)
-        retarray = bytearray(string, "utf-8")
+        #retarray = bytearray(string, "utf-8")
+        retarray = bytearray(string)
         retarray.append("\x00")
         return retarray
 
     def encode_string_as_opaquedata(self, string):
         retarray = bytearray()
         retarray.extend(self.encode_multibyte_integer(len(string)))
-        retarray.extend(bytearray(string, "utf-8"))
+        #retarray.extend(bytearray(string, "utf-8"))
+        retarray.extend(bytearray(string))
         return retarray
 
     def encode_hexstring_as_opaquedata(self, hexstring):
