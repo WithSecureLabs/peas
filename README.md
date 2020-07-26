@@ -18,15 +18,17 @@ Path | Functionality
 
 ## Quick start
 
-`$ git clone https://github.com/snovvcrash/peas ~/tools/peas-m && cd ~/tools/peas-m`
-
-`(venv) $ python -m virtualenv --python=/usr/bin/python venv && source venv/bin/activate`
-
-`(venv) $ pip install -r requirements.txt`
+```
+$ git clone https://github.com/snovvcrash/peas ~/tools/peas-m && cd ~/tools/peas-m
+(venv) $ python -m virtualenv --python=/usr/bin/python venv && source venv/bin/activate
+(venv) $ pip install -r requirements.txt
+```
 
 ## Optional installation
 
-`(venv) $ python setup.py install`
+```
+(venv) $ python setup.py install
+```
 
 # PEAS application
 
@@ -34,45 +36,62 @@ PEAS can be run without installation from the parent `peas` directory (containin
 
 ## Running PEAS
 
-`(venv) $ python -m peas [options] <server>`
+```
+(venv) $ python -m peas [options] <server>
+```
 
 ## Example usage
 
 ### Check server
 
-`(venv) $ python -m peas mx.corp.local`
+```
+(venv) $ python -m peas mx.corp.local
+```
 
 ### Check credentials
 
-`(venv) $ python -m peas --check -u 'CORP\snovvcrash' -p 'Passw0rd1!' mx.corp.local`
+```
+(venv) $ python -m peas --check -u 'CORP\snovvcrash' -p 'Passw0rd1!' mx.corp.local
+```
 
 ### Get emails
 
-`(venv) $ python -m peas --emails -u 'CORP\snovvcrash' -p 'Passw0rd1!' mx.corp.local`
+```
+(venv) $ python -m peas --emails -u 'CORP\snovvcrash' -p 'Passw0rd1!' mx.corp.local
+```
 
 ### Save emails to directory
 
-`(venv) $ python -m peas --emails -O emails -u 'CORP\snovvcrash' -p 'Passw0rd1!' mx.corp.local`
+```
+(venv) $ python -m peas --emails -O emails -u 'CORP\snovvcrash' -p 'Passw0rd1!' mx.corp.local
+```
 
 ### List file shares
 
-`(venv) $ python -m peas --list-unc='\\DC02' -u 'CORP\snovvcrash' -p 'Passw0rd1!' mx.corp.local`
-
-`(venv) $ python -m peas --list-unc='\\DC02\SYSVOL\corp.local' -u 'CORP\snovvcrash' -p 'Passw0rd1!' mx.corp.local`
+```
+(venv) $ python -m peas --list-unc='\\DC02' -u 'CORP\snovvcrash' -p 'Passw0rd1!' mx.corp.local
+(venv) $ python -m peas --list-unc='\\DC02\SYSVOL\corp.local' -u 'CORP\snovvcrash' -p 'Passw0rd1!' mx.corp.local
+```
 
 **Note:** Using an IP address or FQDN instead of a hostname in the UNC path may fail.
 
 ### View file on file share
 
-`(venv) $ python -m peas --dl-unc='\\fictitious-dc\guestshare\fileonguestshare.txt' -u 'CORP\snovvcrash' -p 'Passw0rd1!' mx.corp.local`
+```
+(venv) $ python -m peas --dl-unc='\\fictitious-dc\guestshare\fileonguestshare.txt' -u 'CORP\snovvcrash' -p 'Passw0rd1!' mx.corp.local
+```
 
 ### Save file from file share
 
-`(venv) $ python -m peas --dl-unc='\\fictitious-dc\guestshare\fileonguestshare.txt' -o file.txt -u 'CORP\snovvcrash' -p 'Passw0rd1!' mx.corp.local`
+```
+(venv) $ python -m peas --dl-unc='\\fictitious-dc\guestshare\fileonguestshare.txt' -o file.txt -u 'CORP\snovvcrash' -p 'Passw0rd1!' mx.corp.local
+```
 
-Crawl & download
+### Crawl & download
 
-`(venv) $ python -m peas --crawl-unc='\\fictitious-dc\guestshare\fileonguestshare.txt' -u 'CORP\snovvcrash' -p 'Passw0rd1!' mx.corp.local [--pattern xml,ini] [--download]`
+```
+(venv) $ python -m peas --crawl-unc='\\fictitious-dc\guestshare\fileonguestshare.txt' -u 'CORP\snovvcrash' -p 'Passw0rd1!' mx.corp.local [--pattern xml,ini] [--download]
+```
 
 ### Command line arguments
 
