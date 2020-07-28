@@ -86,6 +86,9 @@ def create_arg_parser():
                       action="store_true", default=False,
                       help="download files at a given UNC path while crawling (--crawl-unc)")
 
+    parser.add_option("--prefix", None, dest="prefix",
+                      help="NetBIOS hostname prefix (--brute-unc)")
+
     # Functionality:
     parser.add_option("--check", None,
                       action="store_true", dest="check",
@@ -109,6 +112,10 @@ def create_arg_parser():
                       dest="crawl_unc",
                       help="recursively list all files at a given UNC path",
                       metavar="UNC_PATH")
+
+    parser.add_option("--brute-unc", None,
+                      action="store_true", dest="brute_unc",
+                      help="recursively list all files at a given UNC path")
 
     return parser
 
@@ -307,6 +314,54 @@ def crawl_unc(options):
     crawl_unc_helper(client, options.crawl_unc, patterns, options)
 
 
+def generate_wordlist(prefix=None):
+
+    hostnames = [
+        'DC', 'WEB', 'DEV', 'SQL', 'RDS',
+        'TS', 'TER', 'TERM', 'JIRA', 'FS',
+        'EXCH', 'EX', 'CRM', '1C', 'WIN',
+        'NAP', 'SKUD', 'SEC', 'WSUS', 'PC',
+        'WS', 'MN'
+    ]
+
+    wordlist = []
+    if prefix is not None:
+        for h in hostnames:
+            for i in range(1, 5):
+                wordlist.append('{prefix}{i:02}-{h}'.format(prefix=prefix, i=i, h=h))  # PREFIX01-DC
+                wordlist.append('{prefix}{i}-{h}'.format(prefix=prefix, i=i, h=h))     # PREFIX1-DC
+                for j in range(1, 10):
+                    wordlist.append('{prefix}{i:02}-{h}-{j:02}'.format(prefix=prefix, i=i, h=h, j=j))  # PREFIX01-DC-01
+                    wordlist.append('{prefix}{i}-{h}-{j:02}'.format(prefix=prefix, i=i, h=h, j=j))     # PREFIX1-DC-01
+                    wordlist.append('{prefix}{i:02}-{h}-{j}'.format(prefix=prefix, i=i, h=h, j=j))     # PREFIX01-DC-1
+                    wordlist.append('{prefix}{i}-{h}-{j}'.format(prefix=prefix, i=i, h=h, j=j))        # PREFIX1-DC-1
+                    wordlist.append('{prefix}{i:02}-{h}{j:02}'.format(prefix=prefix, i=i, h=h, j=j))   # PREFIX01-DC01
+                    wordlist.append('{prefix}{i}-{h}{j:02}'.format(prefix=prefix, i=i, h=h, j=j))      # PREFIX1-DC01
+                    wordlist.append('{prefix}{i:02}-{h}{j}'.format(prefix=prefix, i=i, h=h, j=j))      # PREFIX01-DC1
+                    wordlist.append('{prefix}{i}-{h}{j}'.format(prefix=prefix, i=i, h=h, j=j))         # PREFIX1-DC1
+
+    for h in hostnames:
+        wordlist.append(h)  # DC
+        for i in range(1, 10):
+            wordlist.append('{h}-{i:02}'.format(h=h, i=i))  # DC-01
+            wordlist.append('{h}-{i}'.format(h=h, i=i))     # DC-1
+            wordlist.append('{h}{i:02}'.format(h=h, i=i))   # DC01
+            wordlist.append('{h}{i}'.format(h=h, i=i))      # DC1
+
+    return wordlist
+
+
+def brute_unc(options):
+
+    client = init_authed_client(options, verify=options.verify_ssl)
+    if not client:
+        return
+
+    wordlist = generate_wordlist(options.prefix.upper())
+    for w in wordlist:
+        list_unc_helper(client, r'\\%s' % w, options, show_parent=False)
+
+
 def output_result(data, options, default='repr'):
 
     fmt = options.format
@@ -413,6 +468,9 @@ def main():
         ran = True
     if options.crawl_unc:
         crawl_unc(options)
+        ran = True
+    if options.brute_unc:
+        brute_unc(options)
         ran = True
     if not ran:
         check_server(options)
