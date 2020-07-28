@@ -78,19 +78,25 @@ PEAS can be run without installation from the parent `peas` directory (containin
 ### View file on file share
 
 ```
-(venv) $ python -m peas --dl-unc='\\fictitious-dc\guestshare\fileonguestshare.txt' -u 'CORP\snovvcrash' -p 'Passw0rd1!' mx.corp.local
+(venv) $ python -m peas --dl-unc='\\DC02\guestshare\file.txt' -u 'CORP\snovvcrash' -p 'Passw0rd1!' mx.corp.local
 ```
 
 ### Save file from file share
 
 ```
-(venv) $ python -m peas --dl-unc='\\fictitious-dc\guestshare\fileonguestshare.txt' -o file.txt -u 'CORP\snovvcrash' -p 'Passw0rd1!' mx.corp.local
+(venv) $ python -m peas --dl-unc='\\DC02\guestshare\file.txt' -u 'CORP\snovvcrash' -p 'Passw0rd1!' -o file.txt mx.corp.local
 ```
 
 ### Crawl & download
 
 ```
-(venv) $ python -m peas --crawl-unc='\\fictitious-dc\guestshare\fileonguestshare.txt' -u 'CORP\snovvcrash' -p 'Passw0rd1!' mx.corp.local [--pattern xml,ini] [--download]
+(venv) $ python -m peas --crawl-unc='\\DC02\guestshare\file.txt' -u 'CORP\snovvcrash' -p 'Passw0rd1!' mx.corp.local [--pattern xml,ini] [--download]
+```
+
+### Brute file shares
+
+```
+(venv) $ python -m peas --brute-unc -u 'CORP\snovvcrash' -p 'Passw0rd1!' mx.corp.local [--prefix xyz]
 ```
 
 ### Command line arguments
@@ -142,8 +148,8 @@ client.disable_certificate_verification()
 # Set the credentials and server to connect to.
 client.set_creds({
 	'server': 'mx.corp.local',
-	'user': ''CORP\snovvcrash'',
-	'password': ''Passw0rd1!'',
+	'user': 'CORP\snovvcrash',
+	'password': 'Passw0rd1!',
 })
 
 # Check the credentials are accepted.
