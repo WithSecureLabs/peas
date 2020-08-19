@@ -90,7 +90,7 @@ PEAS can be run without installation from the parent `peas` directory (containin
 ### Crawl & download
 
 ```
-(venv) $ python -m peas --crawl-unc='\\DC02\guestshare\file.txt' -u 'CORP\snovvcrash' -p 'Passw0rd1!' mx.corp.local [--pattern xml,ini] [--download]
+(venv) $ python -m peas --crawl-unc='\\DC02\SYSVOL\corp.local' -u 'CORP\snovvcrash' -p 'Passw0rd1!' mx.corp.local [--pattern xml,ini] [--download]
 ```
 
 ### Brute file shares
@@ -148,7 +148,7 @@ client.disable_certificate_verification()
 # Set the credentials and server to connect to.
 client.set_creds({
 	'server': 'mx.corp.local',
-	'user': 'CORP\snovvcrash',
+	'user': r'CORP\snovvcrash',
 	'password': 'Passw0rd1!',
 })
 
