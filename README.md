@@ -19,8 +19,9 @@ Path | Functionality
 ## Quick start
 
 ```
-$ git clone https://github.com/snovvcrash/peas ~/tools/peas-m && cd ~/tools/peas-m
-(venv) $ python -m virtualenv --python=/usr/bin/python venv && source venv/bin/activate
+$ git clone https://github.com/s.freeside/peas ~/tools/peas-m && cd ~/tools/peas-m
+$ python3 -m virtualenv --python=/usr/bin/python venv && source venv/bin/activate
+(venv) $ pip install --upgrade 'setuptools<45.0.0'
 (venv) $ pip install -r requirements.txt
 ```
 
@@ -45,32 +46,32 @@ PEAS can be run without installation from the parent `peas` directory (containin
 ### Check server
 
 ```
-(venv) $ python -m peas mx.corp.local
+(venv) $ python -m peas mx.megacorp.local
 ```
 
 ### Check credentials
 
 ```
-(venv) $ python -m peas --check -u 'CORP\snovvcrash' -p 'Passw0rd1!' mx.corp.local
+(venv) $ python -m peas -u 'MEGACORP\s.freeside' -p 'Passw0rd1!' mx.megacorp.local --check
 ```
 
 ### Get emails
 
 ```
-(venv) $ python -m peas --emails -u 'CORP\snovvcrash' -p 'Passw0rd1!' mx.corp.local
+(venv) $ python -m peas -u 'MEGACORP\s.freeside' -p 'Passw0rd1!' mx.megacorp.local --emails
 ```
 
 ### Save emails to directory
 
 ```
-(venv) $ python -m peas --emails -O emails -u 'CORP\snovvcrash' -p 'Passw0rd1!' mx.corp.local
+(venv) $ python -m peas -O emails -u 'MEGACORP\s.freeside' -p 'Passw0rd1!' mx.megacorp.local --emails
 ```
 
 ### List file shares
 
 ```
-(venv) $ python -m peas --list-unc='\\DC02' -u 'CORP\snovvcrash' -p 'Passw0rd1!' mx.corp.local
-(venv) $ python -m peas --list-unc='\\DC02\SYSVOL\corp.local' -u 'CORP\snovvcrash' -p 'Passw0rd1!' mx.corp.local
+(venv) $ python -m peas -u 'MEGACORP\s.freeside' -p 'Passw0rd1!' mx.megacorp.local --list-unc='\\DC02'
+(venv) $ python -m peas -u 'MEGACORP\s.freeside' -p 'Passw0rd1!' mx.megacorp.local --list-unc='\\DC02\SYSVOL\megacorp.local'
 ```
 
 **Note:** Using an IP address or FQDN instead of a hostname in the UNC path may fail.
@@ -78,25 +79,25 @@ PEAS can be run without installation from the parent `peas` directory (containin
 ### View file on file share
 
 ```
-(venv) $ python -m peas --dl-unc='\\DC02\guestshare\file.txt' -u 'CORP\snovvcrash' -p 'Passw0rd1!' mx.corp.local
+(venv) $ python -m peas -u 'MEGACORP\s.freeside' -p 'Passw0rd1!' mx.megacorp.local --dl-unc='\\DC02\guestshare\file.txt'
 ```
 
 ### Save file from file share
 
 ```
-(venv) $ python -m peas --dl-unc='\\DC02\guestshare\file.txt' -u 'CORP\snovvcrash' -p 'Passw0rd1!' -o file.txt mx.corp.local
+(venv) $ python -m peas -u 'MEGACORP\s.freeside' -p 'Passw0rd1!' -o file.txt mx.megacorp.local --dl-unc='\\DC02\guestshare\file.txt'
 ```
 
 ### Crawl & download
 
 ```
-(venv) $ python -m peas --crawl-unc='\\DC02\SYSVOL\corp.local' -u 'CORP\snovvcrash' -p 'Passw0rd1!' mx.corp.local [--pattern xml,ini] [--download]
+(venv) $ python -m peas -u 'MEGACORP\s.freeside' -p 'Passw0rd1!' mx.megacorp.local --crawl-unc='\\DC02\SYSVOL\megacorp.local' [--pattern xml,ini] [--download]
 ```
 
 ### Brute file shares
 
 ```
-(venv) $ python -m peas --brute-unc -u 'CORP\snovvcrash' -p 'Passw0rd1!' mx.corp.local [--prefix xyz]
+(venv) $ python -m peas -u 'MEGACORP\s.freeside' -p 'Passw0rd1!' mx.megacorp.local --brute-unc [--prefix xyz]
 ```
 
 ### Command line arguments
@@ -147,16 +148,16 @@ client.disable_certificate_verification()
 
 # Set the credentials and server to connect to.
 client.set_creds({
-	'server': 'mx.corp.local',
-	'user': r'CORP\snovvcrash',
-	'password': 'Passw0rd1!',
+	'server': r'mx.megacorp.local',
+	'user': r'MEGACORP\s.freeside',
+	'password': r'Passw0rd1!',
 })
 
 # Check the credentials are accepted.
 print("Auth result:", client.check_auth())
 
 # Retrieve a file share directory listing.
-listing = client.get_unc_listing(r'\\DC02\SYSVOL\corp.local')
+listing = client.get_unc_listing(r'\\DC02\SYSVOL\megacorp.local')
 print(listing)
 
 # Retrieve emails.
