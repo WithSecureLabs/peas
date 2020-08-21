@@ -191,9 +191,16 @@ def extract_emails(creds):
     storage.create_db_if_none()
 
     conn, curs = storage.get_conn_curs()
-    device_info = {"Model": "1234", "IMEI": "123457",
-                   "FriendlyName": "My pyAS Client 2", "OS": "Python", "OSLanguage": "en-us", "PhoneNumber": "NA",
-                   "MobileOperator": "NA", "UserAgent": "pyAS"}
+    device_info = {
+        "Model": "Outlook for iOS and Android",
+        "IMEI": "2095f3b9f442a32220d4d54e641bd4aa",
+        "FriendlyName": "Outlook for iOS and Android",
+        "OS": "OutlookBasicAuth",
+        "OSLanguage": "en-us",
+        "PhoneNumber": "NA",
+        "MobileOperator": "NA",
+        "UserAgent": "Outlook-iOS-Android/1.0"
+    }
 
     #create ActiveSync connector
     as_conn = ASHTTPConnector(creds['server'])  #e.g. "as.myserver.com"

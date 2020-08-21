@@ -19,7 +19,7 @@
 
 # Tests
 
-import sys, time
+import time
 import ssl
 
 from utils.as_code_pages import as_code_pages
@@ -53,12 +53,18 @@ from proto_creds import * #create a file proto_creds.py with vars: as_server, as
 # Disable SSL certificate verification.
 ssl._create_default_https_context = ssl._create_unverified_context
 
-
-pyver = sys.version_info
-
 storage.create_db_if_none()
 conn, curs = storage.get_conn_curs()
-device_info = {"Model":"%d.%d.%d" % (pyver[0], pyver[1], pyver[2]), "IMEI":"123456", "FriendlyName":"My pyAS Client", "OS":"Python", "OSLanguage":"en-us", "PhoneNumber": "NA", "MobileOperator":"NA", "UserAgent": "pyAS"}
+device_info = {
+    "Model": "Outlook for iOS and Android",
+    "IMEI": "2095f3b9f442a32220d4d54e641bd4aa",
+    "FriendlyName": "Outlook for iOS and Android",
+    "OS": "OutlookBasicAuth",
+    "OSLanguage": "en-us",
+    "PhoneNumber": "NA",
+    "MobileOperator": "NA",
+    "UserAgent": "Outlook-iOS-Android/1.0"
+}
 
 #create wbxml_parser test
 cp, cp_sh = as_code_pages.build_as_code_pages()
