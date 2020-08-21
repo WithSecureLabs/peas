@@ -28,7 +28,7 @@ $ python3 -m virtualenv --python=/usr/bin/python venv && source venv/bin/activat
 ## Optional installation
 
 ```
-(venv) $ python setup.py install
+$ python setup.py install
 ```
 
 # PEAS application
@@ -38,7 +38,7 @@ PEAS can be run without installation from the parent `peas` directory (containin
 ## Running PEAS
 
 ```
-(venv) $ python -m peas [options] <server>
+$ python -m peas [options] <server>
 ```
 
 ## Example usage
@@ -46,32 +46,32 @@ PEAS can be run without installation from the parent `peas` directory (containin
 ### Check server
 
 ```
-(venv) $ python -m peas mx.megacorp.local
+$ python -m peas mx.megacorp.local
 ```
 
 ### Check credentials
 
 ```
-(venv) $ python -m peas -u 'MEGACORP\s.freeside' -p 'Passw0rd1!' mx.megacorp.local --check
+$ python -m peas -u 'MEGACORP\s.freeside' -p 'Passw0rd1!' mx.megacorp.local --check
 ```
 
 ### Get emails
 
 ```
-(venv) $ python -m peas -u 'MEGACORP\s.freeside' -p 'Passw0rd1!' mx.megacorp.local --emails
+$ python -m peas -u 'MEGACORP\s.freeside' -p 'Passw0rd1!' mx.megacorp.local --emails
 ```
 
 ### Save emails to directory
 
 ```
-(venv) $ python -m peas -O emails -u 'MEGACORP\s.freeside' -p 'Passw0rd1!' mx.megacorp.local --emails
+$ python -m peas -O emails -u 'MEGACORP\s.freeside' -p 'Passw0rd1!' mx.megacorp.local --emails
 ```
 
 ### List file shares
 
 ```
-(venv) $ python -m peas -u 'MEGACORP\s.freeside' -p 'Passw0rd1!' mx.megacorp.local --list-unc='\\DC02'
-(venv) $ python -m peas -u 'MEGACORP\s.freeside' -p 'Passw0rd1!' mx.megacorp.local --list-unc='\\DC02\SYSVOL\megacorp.local'
+$ python -m peas -u 'MEGACORP\s.freeside' -p 'Passw0rd1!' mx.megacorp.local --list-unc='\\DC02'
+$ python -m peas -u 'MEGACORP\s.freeside' -p 'Passw0rd1!' mx.megacorp.local --list-unc='\\DC02\SYSVOL\megacorp.local'
 ```
 
 **Note:** Using an IP address or FQDN instead of a hostname in the UNC path may fail.
@@ -79,25 +79,25 @@ PEAS can be run without installation from the parent `peas` directory (containin
 ### View file on file share
 
 ```
-(venv) $ python -m peas -u 'MEGACORP\s.freeside' -p 'Passw0rd1!' mx.megacorp.local --dl-unc='\\DC02\guestshare\file.txt'
+$ python -m peas -u 'MEGACORP\s.freeside' -p 'Passw0rd1!' mx.megacorp.local --dl-unc='\\DC02\guestshare\file.txt'
 ```
 
 ### Save file from file share
 
 ```
-(venv) $ python -m peas -u 'MEGACORP\s.freeside' -p 'Passw0rd1!' -o file.txt mx.megacorp.local --dl-unc='\\DC02\guestshare\file.txt'
+$ python -m peas -u 'MEGACORP\s.freeside' -p 'Passw0rd1!' -o file.txt mx.megacorp.local --dl-unc='\\DC02\guestshare\file.txt'
 ```
 
 ### Crawl & download
 
 ```
-(venv) $ python -m peas -u 'MEGACORP\s.freeside' -p 'Passw0rd1!' mx.megacorp.local --crawl-unc='\\DC02\SYSVOL\megacorp.local' [--pattern xml,ini] [--download]
+$ python -m peas -u 'MEGACORP\s.freeside' -p 'Passw0rd1!' mx.megacorp.local --crawl-unc='\\DC02\SYSVOL\megacorp.local' [--pattern xml,ini] [--download]
 ```
 
 ### Brute file shares
 
 ```
-(venv) $ python -m peas -u 'MEGACORP\s.freeside' -p 'Passw0rd1!' mx.megacorp.local --brute-unc [--prefix xyz]
+$ python -m peas -u 'MEGACORP\s.freeside' -p 'Passw0rd1!' mx.megacorp.local --brute-unc [--prefix xyz]
 ```
 
 ### Command line arguments

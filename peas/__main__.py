@@ -289,8 +289,8 @@ def crawl_unc_helper(client, uncpath, patterns, options):
                             else:
                                 if dirpath != newdirpath:
                                     warning('File %s"%s"%s was written to %s"%s"%s' % (M, str(posixpath), S, M, filename, S))
-                    else:
-                        list_unc_helper(client, record['LinkId'], options, show_parent=False)
+
+                    list_unc_helper(client, record['LinkId'], options, show_parent=False)
 
                     break
 
@@ -307,9 +307,11 @@ def crawl_unc(options):
         patterns = ['']
 
     if options.download:
-        info('Listing and downloading all files: %s\n' % (options.crawl_unc))
+        info('Listing and downloading all files: %s' % (options.crawl_unc,))
     else:
-        info('Listing all files: %s\n' % (options.crawl_unc))
+        info('Listing all files: %s' % (options.crawl_unc,))
+
+    info('Pattern: %s\n' % (options.pattern,))
 
     crawl_unc_helper(client, options.crawl_unc, patterns, options)
 
