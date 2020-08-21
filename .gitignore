@@ -19,4 +19,5 @@ venv.bak/
 
 # Custom files
 *.txt
+!hostnames.txt
 !requirements.txt

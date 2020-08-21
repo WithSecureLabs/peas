@@ -316,13 +316,8 @@ def crawl_unc(options):
 
 def generate_wordlist(prefix=None):
 
-    hostnames = [
-        'DC', 'WEB', 'DEV', 'SQL', 'RDS',
-        'TS', 'TER', 'TERM', 'JIRA', 'FS',
-        'EXCH', 'EX', 'CRM', '1C', 'WIN',
-        'NAP', 'SKUD', 'SEC', 'WSUS', 'PC',
-        'WS', 'MN'
-    ]
+    with open('hostnames.txt', 'r') as fd:
+        hostnames = [line.strip() for line in fd]
 
     wordlist = []
     if prefix is not None:
@@ -357,7 +352,11 @@ def brute_unc(options):
     if not client:
         return
 
-    wordlist = generate_wordlist(options.prefix.upper())
+    prefix = None
+    if options.prefix:
+        prefix = options.prefix.upper()
+
+    wordlist = generate_wordlist(prefix)
     for w in wordlist:
         list_unc_helper(client, r'\\%s' % w, options, show_parent=False)
 
