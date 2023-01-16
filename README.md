@@ -20,7 +20,7 @@ Path | Functionality
 
 ```
 $ git clone https://github.com/snovvcrash/peas ~/tools/peas-m && cd ~/tools/peas-m
-$ python3 -m virtualenv --python=/usr/bin/python venv && source venv/bin/activate
+$ python3 -m virtualenv --python=/usr/bin/python venv && source ./venv/bin/activate
 (venv) $ pip install --upgrade 'setuptools<45.0.0'
 (venv) $ pip install -r requirements.txt
 ```
