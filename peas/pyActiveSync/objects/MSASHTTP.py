@@ -21,9 +21,9 @@ import httplib, urllib
 
 class ASHTTPConnector(object):
     """ActiveSync HTTP object"""
-    USER_AGENT = "Python"
-    POST_URL_TEMPLATE = "/Microsoft-Server-ActiveSync?Cmd=%s&User=%s&DeviceId=123456&DeviceType=Python"
-    POST_GETATTACHMENT_URL_TEMPLATE = "/Microsoft-Server-ActiveSync?Cmd=%s&AttachmentName=%s&User=%s&DeviceId=123456&DeviceType=Python"
+    USER_AGENT = "Outlook-iOS-Android/1.0"
+    POST_URL_TEMPLATE = "/Microsoft-Server-ActiveSync?Cmd=%s&User=%s&DeviceId=2095f3b9f442a32220d4d54e641bd4aa&DeviceType=Outlook"
+    POST_GETATTACHMENT_URL_TEMPLATE = "/Microsoft-Server-ActiveSync?Cmd=%s&AttachmentName=%s&User=%s&DeviceId=2095f3b9f442a32220d4d54e641bd4aa&DeviceType=Outlook"
 
     def __init__(self, server, port=443, ssl=True):
         

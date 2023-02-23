@@ -1,4 +1,5 @@
 # PEAS
+
 PEAS is a Python 2 library and command line application for running commands on an ActiveSync server e.g. Microsoft Exchange. It is based on [research](https://labs.mwrinfosecurity.com/blog/accessing-internal-fileshares-through-exchange-activesync) into Exchange ActiveSync protocol by Adam Rutherford and David Chismon of MWR.
 
 ## Prerequisites
@@ -7,6 +8,7 @@ PEAS is a Python 2 library and command line application for running commands on 
 * Python [Requests](http://docs.python-requests.org/) library
 
 ## Significant source files
+
 Path | Functionality
 --- | ---
 `peas/__main__.py` | The command line application.
@@ -14,99 +16,154 @@ Path | Functionality
 `peas/py_activesync_helper.py` | The helper functions that control the interface to pyActiveSync.
 `peas/pyActiveSync/client` | The pyActiveSync EAS command builders and parsers.
 
+## Quick start
+
+```
+$ git clone https://github.com/snovvcrash/peas ~/tools/peas-m && cd ~/tools/peas-m
+$ python3 -m virtualenv --python=/usr/bin/python venv && source ./venv/bin/activate
+(venv) $ pip install --upgrade 'setuptools<45.0.0'
+(venv) $ pip install -r requirements.txt
+```
+
 ## Optional installation
-`python setup.py install`
+
+```
+$ python setup.py install
+```
 
 # PEAS application
+
 PEAS can be run without installation from the parent `peas` directory (containing this readme). PEAS can also be run with the command `peas` after installation.
 
 ## Running PEAS
 
-`python -m peas [options] <server>`
-
+```
+$ python -m peas [options] <server>
+```
 
 ## Example usage
+
 ### Check server
-`python -m peas 10.207.7.100`
+
+```
+$ python -m peas mx.megacorp.local
+```
 
 ### Check credentials
-`python -m peas --check -u luke2 -p ChangeMe123 10.207.7.100`
+
+```
+$ python -m peas -u 'MEGACORP\snovvcrash' -p 'Passw0rd1!' mx.megacorp.local --check
+```
 
 ### Get emails
-`python -m peas --emails -u luke2 -p ChangeMe123 10.207.7.100`
+
+```
+$ python -m peas -u 'MEGACORP\snovvcrash' -p 'Passw0rd1!' mx.megacorp.local --emails
+```
 
 ### Save emails to directory
-`python -m peas --emails -O emails -u luke2 -p ChangeMe123 10.207.7.100`
+
+```
+$ python -m peas -O emails -u 'MEGACORP\snovvcrash' -p 'Passw0rd1!' mx.megacorp.local --emails
+```
 
 ### List file shares
-`python -m peas --list-unc='\\fictitious-dc' -u luke2 -p ChangeMe123 10.207.7.100`
 
-`python -m peas --list-unc='\\fictitious-dc\guestshare' -u luke2 -p ChangeMe123 10.207.7.100`
+```
+$ python -m peas -u 'MEGACORP\snovvcrash' -p 'Passw0rd1!' mx.megacorp.local --list-unc='\\DC02'
+$ python -m peas -u 'MEGACORP\snovvcrash' -p 'Passw0rd1!' mx.megacorp.local --list-unc='\\DC02\SYSVOL\megacorp.local'
+```
 
 **Note:** Using an IP address or FQDN instead of a hostname in the UNC path may fail.
 
 ### View file on file share
-`python -m peas --dl-unc='\\fictitious-dc\guestshare\fileonguestshare.txt' -u luke2 -p ChangeMe123 10.207.7.100`
+
+```
+$ python -m peas -u 'MEGACORP\snovvcrash' -p 'Passw0rd1!' mx.megacorp.local --dl-unc='\\DC02\guestshare\file.txt'
+```
 
 ### Save file from file share
-`python -m peas --dl-unc='\\fictitious-dc\guestshare\fileonguestshare.txt' -o file.txt -u luke2 -p ChangeMe123 10.207.7.100`
+
+```
+$ python -m peas -u 'MEGACORP\snovvcrash' -p 'Passw0rd1!' -o file.txt mx.megacorp.local --dl-unc='\\DC02\guestshare\file.txt'
+```
+
+### Crawl & download
+
+```
+$ python -m peas -u 'MEGACORP\snovvcrash' -p 'Passw0rd1!' mx.megacorp.local --crawl-unc='\\DC02\SYSVOL\megacorp.local' [--pattern xml,ini] [--download]
+```
+
+### Brute file shares
+
+```
+$ python -m peas -u 'MEGACORP\snovvcrash' -p 'Passw0rd1!' mx.megacorp.local --brute-unc [--prefix xyz]
+```
 
 ### Command line arguments
 
 Run `python -m peas --help` for the latest options.
 
-    Options:
-      -h, --help            show this help message and exit
-      -u USER               username
-      -p PASSWORD           password
-      --smb-user=USER       username to use for SMB operations
-      --smb-pass=PASSWORD   password to use for SMB operations
-      --verify-ssl          verify SSL certificates (important)
-      -o FILENAME           output to file
-      -O PATH               output directory (for specific commands only, not
-                            combined with -o)
-      -F repr,hex,b64,stdout,stderr,file
-                            output formatting and encoding options
-      --check               check if account can be accessed with given password
-      --emails              retrieve emails
-      --list-unc=UNC_PATH   list the files at a given UNC path
-      --dl-unc=UNC_PATH     download the file at a given UNC path
-      
-      
+```
+Options:
+  -h, --help            show this help message and exit
+  -u USER               username
+  -p PASSWORD           password
+  -q                    suppress all unnecessary output
+  --smb-user=USER       username to use for SMB operations
+  --smb-pass=PASSWORD   password to use for SMB operations
+  --verify-ssl          verify SSL certificates (important)
+  -o FILENAME           output to file
+  -O PATH               output directory (for specific commands only, not
+                        combined with -o)
+  -F repr,hex,b64,stdout,stderr,file
+                        output formatting and encoding options
+  --pattern=PATTERN     filter files by comma-separated patterns (--crawl-unc)
+  --download            download files at a given UNC path while crawling
+                        (--crawl-unc)
+  --check               check if account can be accessed with given password
+  --emails              retrieve emails
+  --list-unc=UNC_PATH   list the files at a given UNC path
+  --dl-unc=UNC_PATH     download the file at a given UNC path
+  --crawl-unc=UNC_PATH  recursively list all files at a given UNC path
+```
+
 ## PEAS library
 
 PEAS can be imported as a library.
 
 ### Example code
 
-    import peas
+```python
+import peas
 
-    # Create an instance of the PEAS client.
-    client = peas.Peas()
-    
-    # Display the documentation for the PEAS client.
-    help(client)
+# Create an instance of the PEAS client.
+client = peas.Peas()
 
-    # Disable certificate verification so self-signed certificates don't cause errors.
-    client.disable_certificate_verification()
+# Display the documentation for the PEAS client.
+help(client)
 
-    # Set the credentials and server to connect to.
-    client.set_creds({
-        'server': '10.207.7.100',
-        'user': 'luke2',
-        'password': 'ChangeMe123',
-    })
+# Disable certificate verification so self-signed certificates don't cause errors.
+client.disable_certificate_verification()
 
-    # Check the credentials are accepted.
-    print("Auth result:", client.check_auth())
+# Set the credentials and server to connect to.
+client.set_creds({
+	'server': r'mx.megacorp.local',
+	'user': r'MEGACORP\snovvcrash',
+	'password': r'Passw0rd1!',
+})
 
-    # Retrieve a file share directory listing.
-    listing = client.get_unc_listing(r'\\fictitious-dc\guestshare')
-    print(listing)
+# Check the credentials are accepted.
+print("Auth result:", client.check_auth())
 
-    # Retrieve emails.
-    emails = client.extract_emails()
-    print(emails)
+# Retrieve a file share directory listing.
+listing = client.get_unc_listing(r'\\DC02\SYSVOL\megacorp.local')
+print(listing)
+
+# Retrieve emails.
+emails = client.extract_emails()
+print(emails)
+```
 
 ## Extending
 
